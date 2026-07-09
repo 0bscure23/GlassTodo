@@ -1,0 +1,21 @@
+bin/
+obj/
+publish/
+*.user
+*.suo
+.vs/
+
+# Release artifacts
+dist/
+*.zip
+
+# Local verification snapshots / temp
+.verify-*.png
+*.tmp
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Dev scratch (screenshots of local desktop must never be committed)
+.dev/

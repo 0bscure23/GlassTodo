@@ -1,0 +1,64 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="po">
+
+    <!-- ===== 琉璃清单 · 深色玻璃调色板 ===== -->
+
+    <SolidColorBrush x:Key="GlassTintBrush" Color="#3320202A" po:Freeze="True" />
+    <SolidColorBrush x:Key="GlassTintLiquidBrush" Color="#5912141C" po:Freeze="True" />
+    <SolidColorBrush x:Key="GlassFallbackSolidBrush" Color="#F2202028" po:Freeze="True" />
+
+    <LinearGradientBrush x:Key="SpecularBrush" StartPoint="0,0" EndPoint="0,1" po:Freeze="True">
+        <GradientStop Color="#26FFFFFF" Offset="0" />
+        <GradientStop Color="#08FFFFFF" Offset="0.14" />
+        <GradientStop Color="#00FFFFFF" Offset="0.24" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="HairlineTopBrush" Color="#40FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="WindowInnerStrokeBrush" Color="#1AFFFFFF" po:Freeze="True" />
+
+    <SolidColorBrush x:Key="CardFillBrush" Color="#14FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="CardFillHoverBrush" Color="#22FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="CardFillPressedBrush" Color="#2BFFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="CardStrokeBrush" Color="#1FFFFFFF" po:Freeze="True" />
+
+    <SolidColorBrush x:Key="InputFillBrush" Color="#14FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="InputStrokeBrush" Color="#1AFFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="InputFocusStrokeBrush" Color="#805B9DFF" po:Freeze="True" />
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F2FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#99FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="TextDoneBrush" Color="#66FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="TextOnAccentBrush" Color="#FFFFFFFF" po:Freeze="True" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="#5B9DFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="AccentDimBrush" Color="#2E5B9DFF" po:Freeze="True" />
+
+    <SolidColorBrush x:Key="PriorityHighBrush" Color="#FF6B6B" po:Freeze="True" />
+    <SolidColorBrush x:Key="PriorityMediumBrush" Color="#FFC53D" po:Freeze="True" />
+    <SolidColorBrush x:Key="PriorityLowBrush" Color="#5BB98B" po:Freeze="True" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#FF6B6B" po:Freeze="True" />
+
+    <SolidColorBrush x:Key="ScrollThumbBrush" Color="#40FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="DividerBrush" Color="#14FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="CheckRingBrush" Color="#66FFFFFF" po:Freeze="True" />
+    <SolidColorBrush x:Key="ToggleKnobBrush" Color="#FFFFFFFF" po:Freeze="True" />
+
+    <SolidColorBrush x:Key="MenuFillBrush" Color="#F226262E" po:Freeze="True" />
+    <SolidColorBrush x:Key="MenuStrokeBrush" Color="#26FFFFFF" po:Freeze="True" />
+
+    <!-- 液态玻璃：光斑 / 高光扫过 / 棱边 -->
+    <Color x:Key="LiquidLightColor">#2EFFFFFF</Color>
+    <Color x:Key="LiquidGlintColor">#3CFFFFFF</Color>
+    <Color x:Key="LiquidSheenColor">#4DFFFFFF</Color>
+    <LinearGradientBrush x:Key="LiquidRimBrush" StartPoint="0,0" EndPoint="1,1" po:Freeze="True">
+        <GradientStop Color="#66FFFFFF" Offset="0" />
+        <GradientStop Color="#14FFFFFF" Offset="0.35" />
+        <GradientStop Color="#0AFFFFFF" Offset="0.7" />
+        <GradientStop Color="#40FFFFFF" Offset="1" />
+    </LinearGradientBrush>
+
+</ResourceDictionary>

@@ -1,0 +1,247 @@
+<UserControl x:Class="GlassTodo.Views.SettingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="{StaticResource AppFont}"
+             Foreground="{DynamicResource TextPrimaryBrush}">
+
+    <UserControl.Resources>
+        <Style x:Key="SettingRow" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource CardFillBrush}" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="Margin" Value="0,4" />
+        </Style>
+        <Style x:Key="SettingLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style x:Key="SettingHint" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        </Style>
+        <Style x:Key="ThemeChip" TargetType="Button" BasedOn="{StaticResource SubtleButton}">
+            <Setter Property="Padding" Value="10,4" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="6,0,0,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 头部：返回 + 标题 -->
+        <Grid Grid.Row="0" Margin="0,2,0,10">
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource IconButton}" Content="&#xE76B;" ToolTip="返回"
+                        Click="Back_Click" />
+                <TextBlock Text="设置" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"
+                           Margin="6,0,0,0" />
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" Style="{StaticResource GlassScroll}">
+            <StackPanel Margin="0,0,2,0" DataContext="{Binding SettingsVM}">
+
+                <!-- 开机自启 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <Grid>
+                        <TextBlock Style="{StaticResource SettingLabel}" Text="开机自动启动" />
+                        <ToggleButton Style="{StaticResource GlassToggleSwitch}" HorizontalAlignment="Right"
+                                      IsChecked="{Binding AutoStart, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+
+                <!-- 主题 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <Grid>
+                        <TextBlock Style="{StaticResource SettingLabel}" Text="主题" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="跟随系统" Command="{Binding SetThemeCommand}" CommandParameter="0">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ThemeChip}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ThemeIndex}" Value="0">
+                                                <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="浅色" Command="{Binding SetThemeCommand}" CommandParameter="1">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ThemeChip}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ThemeIndex}" Value="1">
+                                                <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="深色" Command="{Binding SetThemeCommand}" CommandParameter="2">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ThemeChip}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ThemeIndex}" Value="2">
+                                                <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 外观风格 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <Grid>
+                        <TextBlock Style="{StaticResource SettingLabel}" Text="外观风格" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="液态玻璃" Command="{Binding SetStyleCommand}" CommandParameter="1">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ThemeChip}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StyleIndex}" Value="1">
+                                                <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="经典" Command="{Binding SetStyleCommand}" CommandParameter="0">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ThemeChip}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StyleIndex}" Value="0">
+                                                <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 玻璃底浓度 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Style="{StaticResource SettingLabel}" Text="玻璃底浓度（液态）" />
+                            <TextBlock Style="{StaticResource SettingHint}" HorizontalAlignment="Right"
+                                       VerticalAlignment="Center">
+                                <Run Text="{Binding GlassDensityPercent, Mode=OneWay}" /><Run Text=" %" />
+                            </TextBlock>
+                        </Grid>
+                        <Slider Style="{StaticResource GlassSlider}" Margin="0,8,0,0"
+                                Minimum="5" Maximum="85" TickFrequency="5" IsSnapToTickEnabled="True"
+                                Value="{Binding GlassDensityPercent, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 任务卡浓度 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Style="{StaticResource SettingLabel}" Text="任务卡浓度（液态）" />
+                            <TextBlock Style="{StaticResource SettingHint}" HorizontalAlignment="Right"
+                                       VerticalAlignment="Center">
+                                <Run Text="{Binding CardDensityPercent, Mode=OneWay}" /><Run Text=" %" />
+                            </TextBlock>
+                        </Grid>
+                        <Slider Style="{StaticResource GlassSlider}" Margin="0,8,0,0"
+                                Minimum="50" Maximum="300" TickFrequency="10" IsSnapToTickEnabled="True"
+                                Value="{Binding CardDensityPercent, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 全局热键 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Style="{StaticResource SettingLabel}" Text="全局呼出热键" />
+                            <TextBox x:Name="HotkeyBox" Width="140" HorizontalAlignment="Right"
+                                     Style="{StaticResource InlineEditBox}" FontSize="12" Padding="8,4"
+                                     IsReadOnly="True" Cursor="Hand" TextAlignment="Center"
+                                     Text="{Binding HotkeyText, Mode=OneWay}"
+                                     GotKeyboardFocus="HotkeyBox_GotFocus"
+                                     LostKeyboardFocus="HotkeyBox_LostFocus"
+                                     PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
+                        </Grid>
+                        <TextBlock Style="{StaticResource SettingHint}" Margin="0,6,0,0"
+                                   Text="{Binding HotkeyStatus}"
+                                   Visibility="{Binding HotkeyStatus, Converter={StaticResource NonEmptyStringToVis}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 呼出延迟 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Style="{StaticResource SettingLabel}" Text="边缘呼出延迟" />
+                            <TextBlock Style="{StaticResource SettingHint}" HorizontalAlignment="Right"
+                                       VerticalAlignment="Center">
+                                <Run Text="{Binding TriggerDwellMs, Mode=OneWay}" /><Run Text=" ms" />
+                            </TextBlock>
+                        </Grid>
+                        <Slider Style="{StaticResource GlassSlider}" Margin="0,8,0,0"
+                                Minimum="100" Maximum="800" TickFrequency="50" IsSnapToTickEnabled="True"
+                                Value="{Binding TriggerDwellMs, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 隐藏延迟 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Style="{StaticResource SettingLabel}" Text="移开后隐藏延迟" />
+                            <TextBlock Style="{StaticResource SettingHint}" HorizontalAlignment="Right"
+                                       VerticalAlignment="Center">
+                                <Run Text="{Binding HideGraceMs, Mode=OneWay}" /><Run Text=" ms" />
+                            </TextBlock>
+                        </Grid>
+                        <Slider Style="{StaticResource GlassSlider}" Margin="0,8,0,0"
+                                Minimum="300" Maximum="2000" TickFrequency="100" IsSnapToTickEnabled="True"
+                                Value="{Binding HideGraceMs, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 面板高度 -->
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Style="{StaticResource SettingLabel}" Text="面板高度（占屏幕）" />
+                            <TextBlock Style="{StaticResource SettingHint}" HorizontalAlignment="Right"
+                                       VerticalAlignment="Center">
+                                <Run Text="{Binding PanelHeightPercent, Mode=OneWay}" /><Run Text=" %" />
+                            </TextBlock>
+                        </Grid>
+                        <Slider Style="{StaticResource GlassSlider}" Margin="0,8,0,0"
+                                Minimum="50" Maximum="90" TickFrequency="5" IsSnapToTickEnabled="True"
+                                Value="{Binding PanelHeightPercent, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource GlassDivider}" Margin="0,10" />
+
+                <!-- 关于 -->
+                <Grid Margin="4,0,4,8">
+                    <TextBlock Style="{StaticResource SettingHint}" Text="{Binding VersionText}"
+                               VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{StaticResource LinkButton}" Content="打开数据文件夹"
+                                ToolTip="{Binding DataFolder}" Command="{Binding OpenDataFolderCommand}" />
+                        <Button Style="{StaticResource LinkButton}" Content="更改位置…" Margin="6,0,0,0"
+                                ToolTip="迁移数据文件到新位置并自动重启"
+                                Command="{Binding ChangeDataFolderCommand}" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
