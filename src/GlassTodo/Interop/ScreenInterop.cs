@@ -50,13 +50,34 @@ internal static class ScreenInterop
 
     private static RectPx ToRectPx(NativeMethods.RECT r) => new(r.Left, r.Top, r.Width, r.Height);
 
+    /// <summary>
+    /// 几何判定全屏应用：前台窗口存在、不是壳层窗口（桌面/任务栏）、没有标题栏、
+    /// 且完整覆盖其所在显示器。不再依赖 SHQueryUserNotificationState——它会把
+    /// “桌面处于前台”（Progman/WorkerW 本身是全屏窗口）误报为全屏应用。
+    /// </summary>
     internal static bool IsFullscreenAppActive()
     {
-        if (NativeMethods.SHQueryUserNotificationState(out int state) != 0) return false;
-        return state is NativeMethods.QUNS_BUSY
-            or NativeMethods.QUNS_RUNNING_D3D_FULL_SCREEN
-            or NativeMethods.QUNS_PRESENTATION_MODE
-            or NativeMethods.QUNS_APP;
+        IntPtr fg = NativeMethods.GetForegroundWindow();
+        if (fg == IntPtr.Zero) return false; // 没有前台窗口（如 Win+D 之后）＝ 桌面
+
+        var sb = new System.Text.StringBuilder(64);
+        if (NativeMethods.GetClassNameW(fg, sb, sb.Capacity) > 0)
+        {
+            string cls = sb.ToString();
+            if (cls is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd")
+                return false; // 壳层桌面 / 任务栏
+        }
+
+        // 普通最大化窗口保留 WS_CAPTION；无边框全屏（游戏/F11/放映）才没有
+        long style = (long)NativeMethods.GetWindowLongPtr(fg, NativeMethods.GWL_STYLE);
+        if ((style & NativeMethods.WS_CAPTION) == NativeMethods.WS_CAPTION) return false;
+
+        if (!NativeMethods.GetWindowRect(fg, out var r)) return false;
+        var mon = FromHandle(NativeMethods.MonitorFromPoint(
+            new NativeMethods.POINT { X = (r.Left + r.Right) / 2, Y = (r.Top + r.Bottom) / 2 },
+            NativeMethods.MONITOR_DEFAULTTONEAREST));
+        var b = mon.Bounds;
+        return r.Left <= b.Left && r.Top <= b.Top && r.Right >= b.Right && r.Bottom >= b.Bottom;
     }
 
     internal static bool IsAnyMouseButtonDown() =>
