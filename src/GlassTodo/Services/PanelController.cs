@@ -53,6 +53,7 @@ public sealed class PanelController
         _animToken++; // 使未完成动画的回调失效
         State = PanelState.Hidden;
         _win.Hide();
+        Backdrop?.Hide();
         HiddenCompleted?.Invoke();
     }
 
@@ -94,6 +95,14 @@ public sealed class PanelController
         ApplyProgress(State is PanelState.Shown ? 1.0 : _win.SlideProgress);
     }
 
+    /// <summary>磨砂背景板（液态模式下贴在卡片后方提供真实模糊），由 App 注入。</summary>
+    public Views.BackdropWindow? Backdrop { get; set; }
+
+    /// <summary>磨砂是否生效（液态风格 + 系统透明效果开启），由主题服务驱动。</summary>
+    public bool FrostEnabled { get; set; }
+
+    private int _rgnW, _rgnH;
+
     private void ApplyProgress(double p)
     {
         if (_win.Hwnd == IntPtr.Zero) return;
@@ -101,6 +110,41 @@ public sealed class PanelController
         int x = (int)Math.Round(hiddenLeft + (DockRect.Left - hiddenLeft) * p);
         NativeMethods.SetWindowPos(_win.Hwnd, IntPtr.Zero, x, DockRect.Top, DockRect.Width, DockRect.Height,
             NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_NOZORDER);
+        SyncBackdrop(x);
+    }
+
+    /// <summary>磨砂背景板逐帧贴在玻璃卡片可见区域的正后方。</summary>
+    private void SyncBackdrop(int mainX)
+    {
+        if (Backdrop is not { } bw || bw.Hwnd == IntPtr.Zero || !FrostEnabled || !bw.IsVisible) return;
+        int margin = (int)Math.Round(ShadowMarginDip * Monitor.Scale);
+        int w = DockRect.Width - margin * 2;
+        int h = DockRect.Height - margin * 2;
+        if (w <= 0 || h <= 0) return;
+        if (w != _rgnW || h != _rgnH)
+        {
+            _rgnW = w;
+            _rgnH = h;
+            WindowEffects.SetRoundRegion(bw.Hwnd, w, h, (int)Math.Round(18 * Monitor.Scale));
+        }
+        // insertAfter = 主窗口 → 背景板始终紧贴主窗口下方
+        NativeMethods.SetWindowPos(bw.Hwnd, _win.Hwnd, mainX + margin, DockRect.Top + margin, w, h,
+            NativeMethods.SWP_NOACTIVATE);
+    }
+
+    /// <summary>磨砂开关变化后同步背景板可见性（面板正显示时立即生效）。</summary>
+    public void RefreshFrost()
+    {
+        if (Backdrop is not { } bw) return;
+        if (FrostEnabled && State is PanelState.Shown or PanelState.Showing)
+        {
+            bw.Show();
+            ApplyProgress(_win.SlideProgress);
+        }
+        else
+        {
+            bw.Hide();
+        }
     }
 
     public bool IsCursorInsidePanel(int x, int y)
@@ -135,6 +179,7 @@ public sealed class PanelController
             // Win+D「显示桌面」会最小化工具窗口，Show() 恢复不了，必须显式还原
             if (_win.WindowState != System.Windows.WindowState.Normal)
                 _win.WindowState = System.Windows.WindowState.Normal;
+            if (FrostEnabled) Backdrop?.Show();
             ApplyProgress(0);
             _win.Show(); // ShowActivated=false → never steals focus
         }
@@ -157,6 +202,7 @@ public sealed class PanelController
         {
             State = PanelState.Hidden;
             _win.Hide();
+            Backdrop?.Hide();
             HiddenCompleted?.Invoke();
         });
     }

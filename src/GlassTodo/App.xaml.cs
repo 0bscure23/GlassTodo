@@ -19,6 +19,7 @@ public partial class App : Application
     private JsonStore<AppSettings>? _settingsStore;
     private MainViewModel? _vm;
     private MainWindow? _mainWindow;
+    private BackdropWindow? _backdropWin;
     private PanelController? _panel;
     private EdgeTriggerService? _edge;
     private ThemeService? _theme;
@@ -121,6 +122,18 @@ public partial class App : Application
         _edge = new EdgeTriggerService(_panel, () => _settingsStore.Data);
 
         _mainWindow.EnsureHandle();
+
+        // 磨砂背景板：液态模式下贴在卡片后方提供真实背景模糊
+        _backdropWin = new BackdropWindow();
+        _backdropWin.EnsureHandle();
+        _theme.RegisterFrostBackdrop(_backdropWin.Hwnd);
+        _panel.Backdrop = _backdropWin;
+        _theme.ThemeChanged += () =>
+        {
+            _panel.FrostEnabled = _theme.FrostActive;
+            _panel.RefreshFrost();
+        };
+
         _theme.Register(_mainWindow);
         _theme.Refresh();
         _panel.ReDock();
