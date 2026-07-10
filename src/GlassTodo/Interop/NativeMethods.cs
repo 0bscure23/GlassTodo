@@ -125,6 +125,17 @@ internal static class NativeMethods
     [DllImport("gdi32.dll")]
     internal static extern IntPtr CreateRoundRectRgn(int left, int top, int right, int bottom, int ellipseW, int ellipseH);
 
+    [DllImport("gdi32.dll")]
+    internal static extern IntPtr CreateRectRgn(int left, int top, int right, int bottom);
+
+    [DllImport("gdi32.dll")]
+    internal static extern int CombineRgn(IntPtr dest, IntPtr src1, IntPtr src2, int mode);
+
+    [DllImport("gdi32.dll")]
+    internal static extern bool DeleteObject(IntPtr obj);
+
+    internal const int RGN_OR = 2;
+
     [DllImport("user32.dll")]
     internal static extern int SetWindowRgn(IntPtr hWnd, IntPtr rgn, bool redraw);
 

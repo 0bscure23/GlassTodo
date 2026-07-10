@@ -19,7 +19,6 @@ public partial class App : Application
     private JsonStore<AppSettings>? _settingsStore;
     private MainViewModel? _vm;
     private MainWindow? _mainWindow;
-    private BackdropWindow? _backdropWin;
     private PanelController? _panel;
     private EdgeTriggerService? _edge;
     private ThemeService? _theme;
@@ -123,11 +122,8 @@ public partial class App : Application
 
         _mainWindow.EnsureHandle();
 
-        // 磨砂背景板：液态模式下贴在卡片后方提供真实背景模糊
-        _backdropWin = new BackdropWindow();
-        _backdropWin.EnsureHandle();
-        _theme.RegisterFrostBackdrop(_backdropWin.Hwnd);
-        _panel.Backdrop = _backdropWin;
+        // 逐卡磨砂窗池：液态模式下每个任务卡后面贴一小块真实模糊
+        _panel.FrostTintProvider = () => _theme.CurrentFrostTint;
         _theme.ThemeChanged += () =>
         {
             _panel.FrostEnabled = _theme.FrostActive;

@@ -37,12 +37,11 @@ public sealed class ThemeService
 
     public void Unregister(Window window) => _windows.Remove(window);
 
-    private IntPtr _frostHwnd;
-
-    /// <summary>磨砂背景板是否成功生效（液态风格 + 系统透明效果开启 + 接口可用）。</summary>
+    /// <summary>磨砂是否应生效（液态风格 + 系统透明效果开启）；小磨砂窗由 PanelController 管理。</summary>
     public bool FrostActive { get; private set; }
 
-    public void RegisterFrostBackdrop(IntPtr hwnd) => _frostHwnd = hwnd;
+    /// <summary>当前磨砂着色（AABBGGRR），供 PanelController 的磨砂窗池取用。</summary>
+    public uint CurrentFrostTint => FrostTint();
 
     public void Refresh()
     {
@@ -67,9 +66,8 @@ public sealed class ThemeService
         {
             var palette = PaletteDict();
 
-            // 磨砂（iOS 质感）：真实模糊由背景板承担，雾感浓淡 = 浓度滑杆控制背景板着色
-            FrostActive = TransparencyEnabled && _frostHwnd != IntPtr.Zero
-                          && WindowEffects.ApplyFrost(_frostHwnd, FrostTint());
+            // 磨砂（iOS 质感）：真实模糊由逐卡磨砂窗承担，雾感浓淡 = 滑杆控制其着色
+            FrostActive = TransparencyEnabled;
 
             // 玻璃底：磨砂生效时本体只留极薄的膜（透光交给模糊层）；
             // 磨砂不可用时退回滑杆着色的清玻璃
@@ -111,10 +109,11 @@ public sealed class ThemeService
         }
     }
 
-    /// <summary>磨砂背景板着色（AABBGGRR）：中性底色，透明度来自「玻璃雾感」滑杆。</summary>
+    /// <summary>磨砂背景板着色（AABBGGRR）：中性底色，透明度来自「玻璃雾感」滑杆（映射调淡）。</summary>
     private uint FrostTint()
     {
-        byte a = (byte)Math.Max(0x14, Math.Clamp(_settings().GlassDensity, 5, 85) * 255 / 100);
+        // 雾感只作用在任务卡小面积上，映射整体调淡：5–85% 滑杆 → 约 3–50% 实际着色
+        byte a = (byte)Math.Max(0x08, Math.Clamp(_settings().GlassDensity, 5, 85) * 150 / 100);
         byte r, g, b;
         if (IsDark) { r = 0x16; g = 0x18; b = 0x1E; }
         else { r = 0xFA; g = 0xFA; b = 0xFC; }

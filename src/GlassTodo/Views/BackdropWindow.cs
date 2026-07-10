@@ -37,5 +37,8 @@ public sealed class BackdropWindow : Window
         Hwnd = new WindowInteropHelper(this).EnsureHandle();
         WindowEffects.AddExStyle(Hwnd,
             NativeMethods.WS_EX_TOOLWINDOW | NativeMethods.WS_EX_NOACTIVATE | NativeMethods.WS_EX_TRANSPARENT);
+        // DWM 圆角在合成层裁剪，模糊也随之成形（GDI 区域裁不动系统模糊）
+        int corner = NativeMethods.DWMWCP_ROUND;
+        NativeMethods.DwmSetWindowAttribute(Hwnd, NativeMethods.DWMWA_WINDOW_CORNER_PREFERENCE, ref corner, sizeof(int));
     }
 }
