@@ -109,11 +109,10 @@ public sealed class ThemeService
         }
     }
 
-    /// <summary>磨砂背景板着色（AABBGGRR）：中性底色，透明度来自「玻璃雾感」滑杆（映射调淡）。</summary>
+    /// <summary>磨砂窗着色（AABBGGRR）：中性底色，透明度直接取「玻璃雾感」滑杆值。</summary>
     private uint FrostTint()
     {
-        // 雾感只作用在任务卡小面积上，映射整体调淡：5–85% 滑杆 → 约 3–50% 实际着色
-        byte a = (byte)Math.Max(0x08, Math.Clamp(_settings().GlassDensity, 5, 85) * 150 / 100);
+        byte a = (byte)Math.Max(0x14, Math.Clamp(_settings().GlassDensity, 5, 85) * 255 / 100);
         byte r, g, b;
         if (IsDark) { r = 0x16; g = 0x18; b = 0x1E; }
         else { r = 0xFA; g = 0xFA; b = 0xFC; }
