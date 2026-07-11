@@ -84,25 +84,6 @@ internal static class WindowEffects
         }
     }
 
-    /// <summary>
-    /// 磨砂背景板：旧式亚克力真模糊 + 调用方给定的着色（AABBGGRR）。
-    /// 让上层清玻璃“透光但模糊背后光线”（iOS 液态玻璃质感）。
-    /// </summary>
-    internal static bool ApplyFrost(IntPtr hwnd, uint tint)
-    {
-        if (hwnd == IntPtr.Zero) return false;
-        SetSystemBackdrop(hwnd, NativeMethods.DWMSBT_NONE);
-        return SetAccent(hwnd, NativeMethods.ACCENT_ENABLE_ACRYLICBLURBEHIND, tint);
-    }
-
-    /// <summary>把窗口裁成圆角矩形（模糊区域随之成形；区域句柄交由系统接管）。</summary>
-    internal static void SetRoundRegion(IntPtr hwnd, int widthPx, int heightPx, int radiusPx)
-    {
-        if (hwnd == IntPtr.Zero) return;
-        IntPtr rgn = NativeMethods.CreateRoundRectRgn(0, 0, widthPx + 1, heightPx + 1, radiusPx * 2, radiusPx * 2);
-        NativeMethods.SetWindowRgn(hwnd, rgn, redraw: true);
-    }
-
     internal static void SetDarkMode(IntPtr hwnd, bool dark)
     {
         int v = dark ? 1 : 0;

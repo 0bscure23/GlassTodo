@@ -120,24 +120,6 @@ internal static class NativeMethods
     internal const int GWL_EXSTYLE = -20;
     internal const long WS_EX_TOOLWINDOW = 0x00000080;
     internal const long WS_EX_NOACTIVATE = 0x08000000;
-    internal const long WS_EX_TRANSPARENT = 0x00000020;
-
-    [DllImport("gdi32.dll")]
-    internal static extern IntPtr CreateRoundRectRgn(int left, int top, int right, int bottom, int ellipseW, int ellipseH);
-
-    [DllImport("gdi32.dll")]
-    internal static extern IntPtr CreateRectRgn(int left, int top, int right, int bottom);
-
-    [DllImport("gdi32.dll")]
-    internal static extern int CombineRgn(IntPtr dest, IntPtr src1, IntPtr src2, int mode);
-
-    [DllImport("gdi32.dll")]
-    internal static extern bool DeleteObject(IntPtr obj);
-
-    internal const int RGN_OR = 2;
-
-    [DllImport("user32.dll")]
-    internal static extern int SetWindowRgn(IntPtr hWnd, IntPtr rgn, bool redraw);
 
     internal const uint SWP_NOSIZE = 0x0001;
     internal const uint SWP_NOMOVE = 0x0002;

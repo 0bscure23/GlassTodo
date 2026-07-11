@@ -53,7 +53,6 @@ public sealed class PanelController
         _animToken++; // 使未完成动画的回调失效
         State = PanelState.Hidden;
         _win.Hide();
-        HideFrostWindows();
         HiddenCompleted?.Invoke();
     }
 
@@ -95,18 +94,6 @@ public sealed class PanelController
         ApplyProgress(State is PanelState.Shown ? 1.0 : _win.SlideProgress);
     }
 
-    /// <summary>磨砂是否生效（液态风格 + 系统透明效果开启），由主题服务驱动。</summary>
-    public bool FrostEnabled { get; set; }
-
-    /// <summary>磨砂着色提供者（AABBGGRR），由 App 注入主题服务的当前值。</summary>
-    public Func<uint>? FrostTintProvider { get; set; }
-
-    // 每个任务卡对应一个小磨砂窗（系统模糊按整窗矩形合成、不吃区域裁剪，
-    // 所以"只在卡片上起雾"必须用窗口池逐卡贴合）
-    private readonly List<Views.BackdropWindow> _frostPool = new();
-    private System.Windows.Rect[] _frostRects = Array.Empty<System.Windows.Rect>();
-    private int _lastMainX;
-
     private void ApplyProgress(double p)
     {
         if (_win.Hwnd == IntPtr.Zero) return;
@@ -114,85 +101,6 @@ public sealed class PanelController
         int x = (int)Math.Round(hiddenLeft + (DockRect.Left - hiddenLeft) * p);
         NativeMethods.SetWindowPos(_win.Hwnd, IntPtr.Zero, x, DockRect.Top, DockRect.Width, DockRect.Height,
             NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_NOZORDER);
-        _lastMainX = x;
-        PositionFrostWindows();
-    }
-
-    /// <summary>主窗口布局变化时推送最新的任务卡矩形（窗口 DIP 坐标）。</summary>
-    public void UpdateFrostRegion(System.Windows.Rect[] rects)
-    {
-        _frostRects = rects;
-        EnsureFrostWindows();
-    }
-
-    private void EnsureFrostWindows()
-    {
-        if (!FrostEnabled || State is PanelState.Hidden or PanelState.Hiding)
-        {
-            HideFrostWindows();
-            return;
-        }
-        while (_frostPool.Count < _frostRects.Length)
-        {
-            var w = new Views.BackdropWindow();
-            w.EnsureHandle();
-            WindowEffects.ApplyFrost(w.Hwnd, FrostTintProvider?.Invoke() ?? 0x30FFFFFFu);
-            _frostPool.Add(w);
-        }
-        for (int i = 0; i < _frostPool.Count; i++)
-        {
-            if (i < _frostRects.Length)
-            {
-                if (!_frostPool[i].IsVisible) _frostPool[i].Show();
-            }
-            else if (_frostPool[i].IsVisible)
-            {
-                _frostPool[i].Hide();
-            }
-        }
-        PositionFrostWindows();
-    }
-
-    /// <summary>把池中的磨砂窗逐卡贴到屏幕坐标（跟随滑动与布局变化）。</summary>
-    private void PositionFrostWindows()
-    {
-        if (!FrostEnabled) return;
-        double sc = Monitor.Scale;
-        int n = Math.Min(_frostPool.Count, _frostRects.Length);
-        for (int i = 0; i < n; i++)
-        {
-            var w = _frostPool[i];
-            if (w.Hwnd == IntPtr.Zero || !w.IsVisible) continue;
-            var r = _frostRects[i];
-            NativeMethods.SetWindowPos(w.Hwnd, _win.Hwnd,
-                _lastMainX + (int)Math.Round(r.X * sc),
-                DockRect.Top + (int)Math.Round(r.Y * sc),
-                (int)Math.Round(r.Width * sc),
-                (int)Math.Round(r.Height * sc),
-                NativeMethods.SWP_NOACTIVATE);
-        }
-    }
-
-    private void HideFrostWindows()
-    {
-        foreach (var w in _frostPool)
-            if (w.IsVisible) w.Hide();
-    }
-
-    /// <summary>主题/浓度变化后重刷所有磨砂窗的着色与可见性。</summary>
-    public void RefreshFrost()
-    {
-        if (FrostEnabled)
-        {
-            uint tint = FrostTintProvider?.Invoke() ?? 0x30FFFFFFu;
-            foreach (var w in _frostPool)
-                WindowEffects.ApplyFrost(w.Hwnd, tint);
-            EnsureFrostWindows();
-        }
-        else
-        {
-            HideFrostWindows();
-        }
     }
 
     public bool IsCursorInsidePanel(int x, int y)
@@ -229,7 +137,6 @@ public sealed class PanelController
                 _win.WindowState = System.Windows.WindowState.Normal;
             ApplyProgress(0);
             _win.Show(); // ShowActivated=false → never steals focus
-            if (FrostEnabled) EnsureFrostWindows();
         }
 
         State = PanelState.Showing;
@@ -250,7 +157,6 @@ public sealed class PanelController
         {
             State = PanelState.Hidden;
             _win.Hide();
-            HideFrostWindows();
             HiddenCompleted?.Invoke();
         });
     }

@@ -449,7 +449,7 @@
             </Grid>
 
             <!-- 任务列表 -->
-            <ScrollViewer x:Name="TaskScroll" Grid.Row="3" Style="{StaticResource GlassScroll}" PanningMode="VerticalOnly">
+            <ScrollViewer Grid.Row="3" Style="{StaticResource GlassScroll}" PanningMode="VerticalOnly">
                 <StackPanel Margin="0,0,2,0">
                     <StackPanel Margin="0,32,0,24"
                                 Visibility="{Binding Pending.Count, Converter={StaticResource ZeroToVisible}}">
@@ -475,7 +475,7 @@
                             <Button Style="{StaticResource LinkButton}" Content="清空已完成"
                                     HorizontalAlignment="Right" Margin="0,2,4,2"
                                     Command="{Binding ClearCompletedCommand}" />
-                            <ItemsControl x:Name="CompletedList" ItemsSource="{Binding Completed}"
+                            <ItemsControl ItemsSource="{Binding Completed}"
                                           ItemTemplate="{StaticResource TaskRowTemplate}" />
                         </StackPanel>
                     </Expander>

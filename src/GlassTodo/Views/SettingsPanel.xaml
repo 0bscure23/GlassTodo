@@ -132,7 +132,7 @@
                 <Border Style="{StaticResource SettingRow}">
                     <StackPanel>
                         <Grid>
-                            <TextBlock Style="{StaticResource SettingLabel}" Text="玻璃雾感（液态）" />
+                            <TextBlock Style="{StaticResource SettingLabel}" Text="玻璃底浓度（液态）" />
                             <TextBlock Style="{StaticResource SettingHint}" HorizontalAlignment="Right"
                                        VerticalAlignment="Center">
                                 <Run Text="{Binding GlassDensityPercent, Mode=OneWay}" /><Run Text=" %" />

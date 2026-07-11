@@ -44,8 +44,6 @@ public partial class MainWindow : Window
         LostKeyboardFocus += (_, _) => RecomputeEditLock();
         AddHandler(TextBoxBase.TextChangedEvent, new TextChangedEventHandler((_, _) => RecomputeEditLock()), true);
 
-        LayoutUpdated += OnLayoutUpdatedForFrost;
-
         // Win+D「显示桌面」会把本工具窗最小化：立即还原窗口并把状态机置为 Hidden，
         // 否则之后鼠标靠边永远召唤不出面板
         StateChanged += (_, _) =>
@@ -377,68 +375,6 @@ public partial class MainWindow : Window
     // ------------------------------------------------------------------
 
     private bool _liquid;
-
-    private Rect[] _lastFrostRects = Array.Empty<Rect>();
-
-    /// <summary>
-    /// 收集需要磨砂的元素矩形（窗口 DIP 坐标）：快速添加框 + 可见任务卡。
-    /// 磨砂只长在“玻璃片”上，面板底子保持清透。
-    /// </summary>
-    public List<Rect> GetFrostRects()
-    {
-        var rects = new List<Rect>();
-        if (!IsVisible || _vm.IsSettingsOpen) return rects;
-
-        AddFrostRect(rects, QuickAddBox, null);
-        var viewport = BoundsOf(TaskScroll);
-        CollectRowRects(rects, PendingList, viewport);
-        CollectRowRects(rects, CompletedList, viewport);
-        return rects;
-    }
-
-    private void CollectRowRects(List<Rect> rects, System.Windows.Controls.ItemsControl list, Rect viewport)
-    {
-        if (!list.IsVisible) return;
-        for (int i = 0; i < list.Items.Count; i++)
-        {
-            if (list.ItemContainerGenerator.ContainerFromIndex(i) is FrameworkElement fe && fe.IsVisible)
-                AddFrostRect(rects, fe, viewport, insetY: 3); // 行容器含上下 3DIP 外边距
-        }
-    }
-
-    private Rect BoundsOf(FrameworkElement el)
-    {
-        var p = el.TranslatePoint(new Point(0, 0), this);
-        return new Rect(p, new Size(el.ActualWidth, el.ActualHeight));
-    }
-
-    private void AddFrostRect(List<Rect> rects, FrameworkElement el, Rect? clip, double insetY = 0)
-    {
-        if (!el.IsVisible || el.ActualWidth < 1) return;
-        var r = BoundsOf(el);
-        if (insetY > 0) r = new Rect(r.X, r.Y + insetY, r.Width, Math.Max(0, r.Height - insetY * 2));
-        if (clip is { } c)
-        {
-            r.Intersect(c);
-            if (r.IsEmpty) return;
-        }
-        if (r.Width > 4 && r.Height > 4) rects.Add(r);
-    }
-
-    private void OnLayoutUpdatedForFrost(object? sender, EventArgs e)
-    {
-        if (Controller is not { FrostEnabled: true } c || !IsVisible) return;
-        var rects = GetFrostRects();
-        if (rects.Count == _lastFrostRects.Length)
-        {
-            bool same = true;
-            for (int i = 0; i < rects.Count && same; i++)
-                if (rects[i] != _lastFrostRects[i]) same = false;
-            if (same) return;
-        }
-        _lastFrostRects = rects.ToArray();
-        c.UpdateFrostRegion(_lastFrostRects);
-    }
 
     public void UpdateLiquidMode(bool liquid)
     {

@@ -121,15 +121,6 @@ public partial class App : Application
         _edge = new EdgeTriggerService(_panel, () => _settingsStore.Data);
 
         _mainWindow.EnsureHandle();
-
-        // 逐卡磨砂窗池：液态模式下每个任务卡后面贴一小块真实模糊
-        _panel.FrostTintProvider = () => _theme.CurrentFrostTint;
-        _theme.ThemeChanged += () =>
-        {
-            _panel.FrostEnabled = _theme.FrostActive;
-            _panel.RefreshFrost();
-        };
-
         _theme.Register(_mainWindow);
         _theme.Refresh();
         _panel.ReDock();
